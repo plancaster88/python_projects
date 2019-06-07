@@ -1,0 +1,47 @@
+import pygal
+import pandas as pd
+import quandl
+
+quandl_token = '8Ny-qC5RzPrtMqy_BUKW' #Token needed to make >= 50 calls to quandl API in 20 min timeframe
+
+zips = [70001, 70002, 70003, 70005, 70006] #Metairie's zip codes
+
+max_val_y = 0 #We will use this to set max y axis range in pygal
+df_rent_psf = pd.DataFrame() #create a blank data frame to populate data from the quandl api
+
+for zip in zips:
+    quandl_code = 'ZILLOW/Z' + str(zip) + '_ZRIFAH' #Call API w/ each zip code  
+    df = quandl.get(quandl_code, authtoken = quandl_token)
+    df.rename(columns={'Value':str(zip)}, inplace=True) #Rename each column header to the zip code
+
+    if df_rent_psf.empty:
+        df_rent_psf = df
+    else:
+        df_rent_psf = df_rent_psf.join(df)
+
+    max_val = df[str(zip)].max() #get max value from current zip
+    
+    if max_val > max_val_y:
+        max_val_y = max_val
+    
+    max_val_y = round(max_val_y, 1) #this will get the max y axis value
+
+df_rent_psf = df_rent_psf.reset_index() #To make a new index
+
+df_rent_psf['DateShort'] = df_rent_psf['Date'].astype('str') #This will be the new index
+df_rent_psf['DateShort'] = df_rent_psf['DateShort'].str[5:7] + '/' + df_rent_psf['DateShort'].str[2:4] #We want mm/yy format
+df_rent_psf.set_index('DateShort', inplace=True) #Set new index
+
+df_rent_psf = df_rent_psf[(df_rent_psf.Date >= '2014-11-01')] #Filter for when I bought my original house to compare data
+
+#print(df_rent_psf.head())
+
+#Create line graph w/ pygal
+line_chart = pygal.Line(x_label_rotation=90, range=(.7, max_val_y + .2)) #set y axis range
+line_chart.title = 'Rent Price per Square Foot'
+line_chart.x_labels = map(str, df_rent_psf.index.tolist())
+
+for zip in zips:
+    line_chart.add(str(zip), df_rent_psf[str(zip)].tolist())
+    
+line_chart.render_to_file('chart.svg')

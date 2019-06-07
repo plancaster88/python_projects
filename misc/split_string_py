@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar 28 09:31:13 2019
+
+@author: A278881
+"""
+
+import pandas as pd
+
+#create dataframe from excel
+df = pd.read_excel('splittest.xlsx')
+
+#replace apostrophes
+df['Split These'] = df['Split These'].str.replace("'", '')
+
+#split into columns on : and strip whitespace from left/right
+df['SpecCodes'] = df['Split These'].apply(lambda x : x.split(':')[0]).str.strip()
+df['SpecDesc'] = df['Split These'].apply(lambda x : x.split(':')[1]).str.strip()
+
+#sort by speccode
+df = df.sort_values(by=['SpecCodes'])
+
+#put into a file
+df[['SpecCodes','SpecDesc']].to_csv('python_specs.csv', index=False)
+

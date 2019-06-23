@@ -17,7 +17,10 @@ df.head()
 df.info()
 
 #pull data into power bi and visualize data
-
+url = 'https://app.powerbi.com/view?r=eyJrIjoiYmQ0MjNlO\
+GEtNmZlZi00ZGJiLTk3MzMtNDg2MTc1ZDViOWMyIiwidCI6IjNlN2M1N\
+TE0LTY0NGItNGUwMy1iM2RhLTJmZjg1ZmM5NWNmMiIsImMiOjN9'
+webbrowser.open_new(url)
 
 #Add Email Domain as a feature
 df['EmailDomain'] = df['Email'].apply(lambda x: x.split('@')[-1])

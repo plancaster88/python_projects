@@ -6,10 +6,9 @@ import seaborn as sns
 import scipy.stats as stats
 import os
 
-
+#navigate to necessary file location and create dataframe
 path = r'C:\Users\phili\Desktop\Python Bootcamp\Course Files\11-Linear-Regression'
 os.chdir(path)
-
 
 df = pd.read_csv('Ecommerce Customers')
 
@@ -23,23 +22,16 @@ df.info()
 #Add Email Domain as a feature
 df['EmailDomain'] = df['Email'].apply(lambda x: x.split('@')[-1])
 
-
+#look at top domains
 df[['EmailDomain','Email']].groupby('EmailDomain'
      ,sort=True).count().sort_values(by=['Email'], ascending=False).head()
 
+#the only top email services:
 popular_domains = ['hotmail.com','gmail.com','yahoo.com']
 
-df['EmailDomainSpecific'] =   df['EmailDomain'].apply(
-      lambda x: x in popular_domains, 1, 0)
-
-
-df_email = pd.get_dummies(df['EmailDomainSpecific'], drop_first=True)
-
-df = pd.concat([df, df_email], axis=1)
-
-#rename dummy column
-df.rename(columns={True:'GeneralEmail'}, inplace=True)
-
+#create popular email domain feature
+df['EmailDomainSpecific'] =  df['EmailDomain'].apply(
+      lambda x: x in popular_domains)*1
 
 #see if anything is correlated
 plt.figure(figsize=(8,8))
@@ -85,8 +77,9 @@ print(lm.intercept_)
 
 #coefficients
 coeff_df = pd.DataFrame(lm.coef_,X.columns,columns=['Coefficient'])
-coeff_df
+print(coeff_df)
 
+#predictions
 predictions = lm.predict(X_test)
 
 #scatterplot of predictions

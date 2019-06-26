@@ -6,10 +6,6 @@ import seaborn as sns
 import scipy.stats as stats
 import os
 
-#navigate to necessary file location and create dataframe
-path = r'C:\Users\phili\Desktop\Python Bootcamp\Course Files\11-Linear-Regression'
-os.chdir(path)
-
 df = pd.read_csv('Ecommerce Customers')
 
 #inspect dataframe
@@ -29,7 +25,7 @@ df['EmailDomain'] = df['Email'].apply(lambda x: x.split('@')[-1])
 df[['EmailDomain','Email']].groupby('EmailDomain'
      ,sort=True).count().sort_values(by=['Email'], ascending=False).head()
 
-#the only top email services:
+#these are the only top email services:
 popular_domains = ['hotmail.com','gmail.com','yahoo.com']
 
 #create popular email domain feature
@@ -45,17 +41,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 import statsmodels.formula.api as sm
 
-
 #create dataframes for model dependent variable (y) and independent variables (x)
 X = df[['Avg. Session Length','Time on App','Time on Website',\
         'Length of Membership','GeneralEmail']]
 y = df['Yearly Amount Spent']
 
 
+
+
+#OLS Regression Results
+
 #make constant
 X_constant = pd.DataFrame(np.ones((len(X), 1)).astype(int), columns=['Constant'])
 
-#OLS Regression Results
 regressor_OLS = sm.OLS(endog=y, exog=pd.concat([X_constant, X], axis=1)).fit()
 print(regressor_OLS.summary())
 

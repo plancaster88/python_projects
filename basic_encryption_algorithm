@@ -1,0 +1,48 @@
+
+import string
+from random import shuffle
+
+characters_reference = [chr(i) for i in range(32,127)]
+characters_shuffled = [chr(i) for i in range(32,127)]
+
+shuffle_list = []
+
+#messages can be decoded up to 100000 characters long 
+for i in range(100000):
+ 
+    shuffle(characters_shuffled)
+    
+    #   Create a copy of charcters_shuffled rather than referencing it
+    new_shuffle = list(characters_shuffled)
+
+    shuffle_list.append(new_shuffle)
+
+
+string_to_encrpyt = 'Hello my name is Philip! This is an attempt at a simple encrpytion algorithm.'
+encrypt_string_indexes = []
+
+for v in string_to_encrpyt:
+    encrypt_string_indexes.append(characters_reference.index(v))
+
+
+encrypted_key = ''
+for i, v in enumerate(encrypt_string_indexes):
+    encrypted_key += str(shuffle_list[i][v])
+  
+
+print('Encrpyted String: ' + encrypted_key)
+
+decrypted_key = []  
+for i, v in enumerate(encrypted_key):
+    decrypted_key.append(shuffle_list[i].index(v))
+    
+decrpyted_string = ''
+for v in decrypted_key:
+   decrpyted_string += str(characters_reference[v])
+    
+
+print('Decrpyted String: ' + decrpyted_string)
+
+
+
+

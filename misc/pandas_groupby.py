@@ -30,15 +30,19 @@ group
 '''
 
 
-def f(x):
+def groupby_cols(x):
     d = {}
     d['a_sum'] = x['a'].sum()
     d['a_max'] = x['a'].max()
+    d['a_min'] = x['a'].min()   
+    d['a_max-a_min'] = x['a'].max() - x['a'].min()
     d['b_mean'] = x['b'].mean()
     d['c_d_prodsum'] = (x['c'] * x['d']).sum()
-    return pd.Series(d, index=['a_sum', 'a_max', 'b_mean', 'c_d_prodsum'])
+    return pd.Series(d, index=['a_max', 'a_min', 'a_max-a_min', 'a_sum', 'b_mean', 'c_d_prodsum'])
 
-df.groupby('group').apply(f)
+df.groupby('group').apply(lambda x: groupby_cols(x))
+# or df.groupby('group').apply(groupby_cols)
+
 
 '''
 OUTPUT

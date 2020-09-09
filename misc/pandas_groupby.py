@@ -1,7 +1,8 @@
-#GROUPBY WITH MULTIPLE AGGREGATIONS 
+import pandas as pd 
 
 df = pd.DataFrame(np.random.rand(4,4), columns=list('abcd'))
 df['group'] = [0, 0, 1, 1]
+df['group2'] = ['x','x','x','y']
 df
 
 '''
@@ -38,16 +39,23 @@ def groupby_cols(x):
     d['a_max-a_min'] = x['a'].max() - x['a'].min()
     d['b_mean'] = x['b'].mean()
     d['c_d_prodsum'] = (x['c'] * x['d']).sum()
-    return pd.Series(d, index=['a_max', 'a_min', 'a_max-a_min', 'a_sum', 'b_mean', 'c_d_prodsum'])
+    return pd.Series(d)
 
-df.groupby('group').apply(lambda x: groupby_cols(x))
+df2 = df.groupby(['group', 'group2']).apply(lambda x: groupby_cols(x))
 # or df.groupby('group').apply(groupby_cols)
+
+
+df2.reset_index(inplace = True)
+
+
+df2
+
 
 
 '''
 OUTPUT
-         a_sum     a_max    b_mean  c_d_prodsum
-group                                           
-0      0.864569  0.446069  0.466054     0.173711
-1      1.478872  0.843026  0.687672     0.630494
+   group group2     a_sum  ...  a_max-a_min    b_mean  c_d_prodsum
+0      0      x  0.487293  ...     0.028344  0.121449     0.520219
+1      1      x  0.956389  ...     0.000000  0.893746     0.040867
+2      1      y  0.605411  ...     0.000000  0.141057     0.100948
 '''

@@ -1,8 +1,7 @@
-
-import requests
 import pandas as pd 
-   
-
+import requests
+import getpass
+import base64
 
 
 class QuickbaseToolkit:
@@ -20,6 +19,15 @@ class QuickbaseToolkit:
         self.authorization = 'QB-USER-TOKEN ' + authorization
         self.user_agent = user_agent
         
+        
+        
+        #this is where we pass credentials in 
+        self.proxies = {'https' : 'http://' + getpass.getuser() + ':' 
+            + str(base64.b64decode(open(r'C:\config\config.txt', "r").read()))[2:-1] 
+            + '@proxy:9119'}
+        
+        
+        
         self.headers = {
           	'QB-Realm-Hostname': qb_realm_hostname
         	, 'User-Agent': user_agent
@@ -30,7 +38,7 @@ class QuickbaseToolkit:
     def app_info(self): 
         r = requests.get(
             'https://api.quickbase.com/v1/apps/{}'.format(self.appid)
-            , proxies={'https': None}
+            , proxies = self.proxies
             , headers = self.headers
         )
         
@@ -42,7 +50,7 @@ class QuickbaseToolkit:
         }
         r = requests.get(
             'https://api.quickbase.com/v1/tables'
-            , proxies={'https': None}
+            , proxies = self.proxies
             , params = params
             , headers = self.headers
         )        
@@ -72,7 +80,7 @@ class QuickbaseToolkit:
             r = requests.get(
                 'https://api.quickbase.com/v1/fields' 
                 , params = params
-                , proxies={'https': None}
+                , proxies = self.proxies
                 , headers = self.headers
             )
                    
@@ -104,7 +112,7 @@ class QuickbaseToolkit:
             r = requests.get(
                 'https://api.quickbase.com/v1/reports'
                 , params = params
-                , proxies={'https': None}
+                , proxies = self.proxies
                 , headers = self.headers
             )
                        
@@ -134,7 +142,7 @@ class QuickbaseToolkit:
         
             r = requests.get(
                 'https://api.quickbase.com/v1/tables/{}/relationships'.format(table[0])
-                , proxies={'https': None}
+                , proxies = self.proxies
                 , headers = self.headers
             )
                
@@ -153,8 +161,6 @@ class QuickbaseToolkit:
             relationship_df_all = pd.concat(relationship_df_list)
 
         return relationship_df_all          
-               
-  
     
     def get_report(self, tableid, reportid, batch_size=500): 
         '''batch_size - optional arg for batch size of report load... 
@@ -176,7 +182,7 @@ class QuickbaseToolkit:
             'https://api.quickbase.com/v1/reports/{}/run'.format(reportid), 
             params = params, 
             headers = self.headers,
-            proxies={'https': None}
+            proxies = self.proxies
             )
             
             #get the data
@@ -215,6 +221,3 @@ class QuickbaseToolkit:
             
         return report_df
     
-
-
-
